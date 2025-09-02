@@ -60,25 +60,25 @@ export default function MapPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Our Global Community
+          <h1 className="text-4xl font-bold text-white mb-4">
+            CSGSA Student Origins Map
           </h1>
-          <p className="text-xl text-gray-600 mb-6">
-            See where our members are located around the world
+          <p className="text-xl text-blue-200 mb-6">
+            Discover the global diversity of our Computer Science graduate students
           </p>
           <div className="flex justify-center space-x-4">
             <Link 
               href="/signup"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md font-medium transition duration-200"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition duration-200"
             >
-              Join the Community
+              Register for Welcome Event
             </Link>
             <Link 
               href="/"
-              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md font-medium transition duration-200"
+              className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-6 py-2 rounded-md font-medium transition duration-200"
             >
               Back to Home
             </Link>
@@ -92,15 +92,15 @@ export default function MapPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-6 mb-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-              Community Map
+            <h2 className="text-2xl font-semibold text-white mb-2">
+              Global Student Community
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-300">
               {isLoading 
                 ? 'Loading...' 
-                : `Showing ${validSignups.length} member${validSignups.length !== 1 ? 's' : ''} on the map`
+                : `Showing ${validSignups.length} CS graduate student${validSignups.length !== 1 ? 's' : ''} on the map`
               }
             </p>
           </div>
@@ -109,20 +109,20 @@ export default function MapPage() {
         </div>
 
         {!isLoading && signups.length > 0 && (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Recent Members
+          <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-6">
+            <h2 className="text-2xl font-semibold text-white mb-4">
+              Recent Registrations
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {signups
                 .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
                 .slice(0, 6)
                 .map((signup) => (
-                  <div key={signup.id} className="border border-gray-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-gray-900">{signup.name}</h3>
-                    <p className="text-gray-600 text-sm">{signup.location}</p>
-                    <p className="text-gray-500 text-xs mt-2">
-                      Joined: {new Date(signup.timestamp).toLocaleDateString()}
+                  <div key={signup.id} className="bg-gray-700 border border-gray-600 rounded-lg p-4">
+                    <h3 className="font-semibold text-white">{signup.name}</h3>
+                    <p className="text-blue-200 text-sm">{signup.location}</p>
+                    <p className="text-gray-400 text-xs mt-2">
+                      Registered: {new Date(signup.timestamp).toLocaleDateString()}
                     </p>
                   </div>
                 ))}
@@ -130,8 +130,8 @@ export default function MapPage() {
             
             {signups.length > 6 && (
               <div className="mt-4 text-center">
-                <p className="text-gray-600">
-                  And {signups.length - 6} more member{signups.length - 6 !== 1 ? 's' : ''}...
+                <p className="text-gray-400">
+                  And {signups.length - 6} more student{signups.length - 6 !== 1 ? 's' : ''} registered...
                 </p>
               </div>
             )}
@@ -139,18 +139,18 @@ export default function MapPage() {
         )}
 
         {!isLoading && signups.length === 0 && (
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              No Members Yet
+          <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-8 text-center">
+            <h2 className="text-2xl font-semibold text-white mb-4">
+              No Registrations Yet
             </h2>
-            <p className="text-gray-600 mb-6">
-              Be the first to join our community!
+            <p className="text-gray-300 mb-6">
+              Be the first CS graduate student to register for our welcome event!
             </p>
             <Link 
               href="/signup"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md font-medium transition duration-200"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition duration-200"
             >
-              Sign Up Now
+              Register Now
             </Link>
           </div>
         )}

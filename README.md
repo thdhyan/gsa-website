@@ -1,20 +1,27 @@
-# GSA Website - Global Signup & Map
+# CSGSA Welcome Event - Student Origins Map
 
-A Next.js website featuring a signup form and interactive map showing member locations worldwide.
+A Next.js website for the Computer Science Graduate Students Association (CSGSA) at the University of Minnesota - Twin Cities. Features a welcome event registration form and interactive map showing the global diversity of CS graduate students.
+
+## About CSGSA
+
+The Computer Science Graduate Students Association represents and supports graduate students in the Department of Computer Science & Engineering at the University of Minnesota. This website serves as a registration platform for welcome events and showcases the international diversity of our graduate student community.
+
+**Official CSGSA Page:** [https://cse.umn.edu/cs/computer-science-graduate-students-association-csgsa](https://cse.umn.edu/cs/computer-science-graduate-students-association-csgsa)
 
 ## Features
 
-- **Signup Form**: Collects name, email, and location from users
-- **Interactive Map**: Displays pins for each signup location using Leaflet
+- **Welcome Event Registration**: CS graduate students can register for CSGSA events
+- **Interactive Origins Map**: Displays pins showing where students come from worldwide
+- **Dark Theme Design**: Modern, professional interface suitable for academic use
 - **Responsive Design**: Mobile-friendly interface with Tailwind CSS
-- **API Routes**: RESTful endpoints for managing signups
+- **API Routes**: RESTful endpoints for managing registrations
 - **TypeScript**: Full type safety throughout the application
 
 ## Pages
 
-- `/` - Home page with navigation and feature overview
-- `/signup` - Signup form for new members
-- `/map` - Interactive map showing all member locations
+- `/` - Home page with CSGSA information and navigation
+- `/signup` - Welcome event registration form for CS graduate students
+- `/map` - Interactive map showing student origins worldwide
 
 ## Tech Stack
 

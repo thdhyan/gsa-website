@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GSA Website - Global Signup & Map",
-  description: "Join our global community and see members on our interactive map",
+  title: "CSGSA Welcome Event - Student Origins Map",
+  description: "Computer Science Graduate Students Association welcome event registration and global student origins map. University of Minnesota - Twin Cities.",
 };
 
 export default function RootLayout({

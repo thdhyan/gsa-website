@@ -57,21 +57,24 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Join Our Community
+            <h1 className="text-3xl font-bold text-white mb-2">
+              CSGSA Welcome Event
             </h1>
-            <p className="text-gray-600">
-              Sign up to be part of our global network
+            <p className="text-blue-200 mb-2">
+              Computer Science Graduate Students Association
+            </p>
+            <p className="text-gray-400">
+              Register for our welcome event and join the community
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
                 Full Name
               </label>
               <input
@@ -81,13 +84,13 @@ export default function SignupPage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your full name"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address
               </label>
               <input
@@ -97,14 +100,14 @@ export default function SignupPage() {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your email address"
               />
             </div>
 
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                Location
+              <label htmlFor="location" className="block text-sm font-medium text-gray-300 mb-2">
+                Where are you from?
               </label>
               <input
                 type="text"
@@ -113,28 +116,28 @@ export default function SignupPage() {
                 value={formData.location}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="e.g., New York, London, Tokyo"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="e.g., Mumbai, London, Minneapolis"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Enter your city, state, or country
+                Enter your city, state, or country of origin
               </p>
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
             >
-              {isSubmitting ? 'Submitting...' : 'Sign Up'}
+              {isSubmitting ? 'Registering...' : 'Register for Welcome Event'}
             </button>
           </form>
 
           {message && (
             <div className={`mt-4 p-3 rounded-md ${
               message.includes('Error') 
-                ? 'bg-red-50 text-red-700 border border-red-200' 
-                : 'bg-green-50 text-green-700 border border-green-200'
+                ? 'bg-red-900 border border-red-700 text-red-200' 
+                : 'bg-green-900 border border-green-700 text-green-200'
             }`}>
               {message}
             </div>
@@ -143,9 +146,18 @@ export default function SignupPage() {
           <div className="mt-6 text-center">
             <Link 
               href="/map" 
-              className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+              className="text-blue-400 hover:text-blue-300 text-sm font-medium transition duration-200"
             >
-              View Community Map →
+              View Student Origins Map →
+            </Link>
+          </div>
+
+          <div className="mt-4 text-center">
+            <Link 
+              href="/" 
+              className="text-gray-500 hover:text-gray-400 text-sm transition duration-200"
+            >
+              ← Back to Home
             </Link>
           </div>
         </div>
