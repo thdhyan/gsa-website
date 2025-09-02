@@ -64,5 +64,27 @@
       "lng": 78.9629
     },
     "timestamp": "2025-09-02T15:44:24.384Z"
+  },
+  {
+    "id": "1756828056374",
+    "name": "rushiendra",
+    "email": "kiungthakkar30@gmail.com",
+    "location": "Antartica",
+    "coordinates": {
+      "lat": 20,
+      "lng": 0
+    },
+    "timestamp": "2025-09-02T15:47:36.374Z"
+  },
+  {
+    "id": "1756828095345",
+    "name": "Rushiendra",
+    "email": "th.dhyan.us@gmail.com",
+    "location": "Cape Town, South Africa",
+    "coordinates": {
+      "lat": -30.5595,
+      "lng": 22.9375
+    },
+    "timestamp": "2025-09-02T15:48:15.345Z"
   }
 ]

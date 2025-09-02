@@ -27,8 +27,11 @@ function MapComponent({ signups }: { signups: Signup[] }) {
     if (isClient && typeof window !== 'undefined') {
       // Import Leaflet dynamically when component mounts
       import('leaflet').then((L) => {
-        // Fix default markers
-        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        // Fix default markers - properly typed interface
+        interface LeafletIconPrototype {
+          _getIconUrl?: () => string;
+        }
+        delete (L.Icon.Default.prototype as LeafletIconPrototype)._getIconUrl;
         L.Icon.Default.mergeOptions({
           iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
           iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
