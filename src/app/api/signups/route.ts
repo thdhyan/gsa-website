@@ -89,6 +89,18 @@ async function geocodeLocation(location: string): Promise<{ lat: number; lng: nu
     'visakhapatnam': { lat: 17.6868, lng: 83.2185 },
     'patna': { lat: 25.5941, lng: 85.1376 },
     
+    // US Cities
+    'minneapolis': { lat: 44.9778, lng: -93.2650 },
+    'saint paul': { lat: 44.9537, lng: -93.0900 },
+    'chicago': { lat: 41.8781, lng: -87.6298 },
+    'los angeles': { lat: 34.0522, lng: -118.2437 },
+    'san francisco': { lat: 37.7749, lng: -122.4194 },
+    'boston': { lat: 42.3601, lng: -71.0589 },
+    'washington dc': { lat: 38.9072, lng: -77.0369 },
+    'seattle': { lat: 47.6062, lng: -122.3321 },
+    'denver': { lat: 39.7392, lng: -104.9903 },
+    'atlanta': { lat: 33.7490, lng: -84.3880 },
+    
     // States/Regions/Countries
     'california': { lat: 36.7783, lng: -119.4179 },
     'florida': { lat: 27.7663, lng: -82.6404 },

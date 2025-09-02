@@ -45,9 +45,9 @@
   },
   {
     "id": "1756827609151",
-    "name": "Dhyan ",
+    "name": "Dhyan Thakkar",
     "email": "thakk100@umn.edu",
-    "location": "Ahmedabad,India",
+    "location": "Ahmedabad, India",
     "coordinates": {
       "lat": 23.0225,
       "lng": 72.5714
@@ -55,36 +55,25 @@
     "timestamp": "2025-09-02T15:40:09.151Z"
   },
   {
-    "id": "1756827864384",
+    "id": "1756830275878",
     "name": "Dhyan",
     "email": "thakk100@umn.edu",
-    "location": "West Bengalm  India",
+    "location": "Minneapolis",
     "coordinates": {
-      "lat": 20.5937,
-      "lng": 78.9629
+      "lat": 44.9778,
+      "lng": -93.265
     },
-    "timestamp": "2025-09-02T15:44:24.384Z"
+    "timestamp": "2025-09-02T16:24:35.878Z"
   },
   {
-    "id": "1756828056374",
-    "name": "rushiendra",
-    "email": "kiungthakkar30@gmail.com",
-    "location": "Antartica",
+    "id": "1756830311668",
+    "name": "Elizabeth",
+    "email": "eli@umn.edu",
+    "location": "London, UK",
     "coordinates": {
-      "lat": 20,
-      "lng": 0
+      "lat": 51.5074,
+      "lng": -0.1278
     },
-    "timestamp": "2025-09-02T15:47:36.374Z"
-  },
-  {
-    "id": "1756828095345",
-    "name": "Rushiendra",
-    "email": "th.dhyan.us@gmail.com",
-    "location": "Cape Town, South Africa",
-    "coordinates": {
-      "lat": -30.5595,
-      "lng": 22.9375
-    },
-    "timestamp": "2025-09-02T15:48:15.345Z"
+    "timestamp": "2025-09-02T16:25:11.668Z"
   }
 ]
