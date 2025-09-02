@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { neon } from '@neondatabase/serverless';
 
 export interface Signup {
   id: string;
   name: string;
   email: string;
   location: string;
+  mediaConsent?: boolean;
   coordinates?: {
     lat: number;
     lng: number;
@@ -14,30 +14,90 @@ export interface Signup {
   timestamp: string;
 }
 
-const dataFile = path.join(process.cwd(), 'data', 'signups.json');
+// In-memory storage for serverless environments (fallback)
+const inMemorySignups: Signup[] = [
+  {
+    "id": "1725321600000",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "location": "New York",
+    "mediaConsent": true,
+    "coordinates": {
+      "lat": 40.7128,
+      "lng": -74.006
+    },
+    "timestamp": "2024-09-02T16:00:00.000Z"
+  },
+  {
+    "id": "1725325200000",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "location": "London",
+    "mediaConsent": false,
+    "coordinates": {
+      "lat": 51.5074,
+      "lng": -0.1278
+    },
+    "timestamp": "2024-09-02T17:00:00.000Z"
+  },
+  {
+    "id": "1725328800000",
+    "name": "Akira Tanaka",
+    "email": "akira@example.com",
+    "location": "Tokyo",
+    "mediaConsent": true,
+    "coordinates": {
+      "lat": 35.6762,
+      "lng": 139.6503
+    },
+    "timestamp": "2024-09-02T18:00:00.000Z"
+  }
+];
 
-// Ensure data directory exists
-function ensureDataDirectory() {
-  const dataDir = path.dirname(dataFile);
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+// Get signups from database or memory fallback
+async function getSignups(): Promise<Signup[]> {
+  try {
+    // Initialize Neon database connection
+    const sql = neon(process.env.DATABASE_URL!);
+    
+    const rows = await sql`
+      SELECT id, name, email, location, media_consent, lat, lng, timestamp 
+      FROM signups 
+      ORDER BY timestamp DESC
+    `;
+    
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      location: row.location,
+      mediaConsent: row.media_consent,
+      coordinates: row.lat && row.lng ? { lat: Number(row.lat), lng: Number(row.lng) } : undefined,
+      timestamp: row.timestamp
+    }));
+  } catch (error) {
+    console.log('Database not available, using in-memory storage:', error);
+    // Fallback to in-memory storage
+    return inMemorySignups;
   }
 }
 
-// Get signups from file
-function getSignups(): Signup[] {
-  ensureDataDirectory();
-  if (!fs.existsSync(dataFile)) {
-    return [];
+// Save signups to database or memory fallback
+async function saveSignup(signup: Signup): Promise<void> {
+  try {
+    // Initialize Neon database connection
+    const sql = neon(process.env.DATABASE_URL!);
+    
+    await sql`
+      INSERT INTO signups (id, name, email, location, media_consent, lat, lng, timestamp)
+      VALUES (${signup.id}, ${signup.name}, ${signup.email}, ${signup.location}, 
+              ${signup.mediaConsent || false}, ${signup.coordinates?.lat || null}, ${signup.coordinates?.lng || null}, ${signup.timestamp})
+    `;
+  } catch (error) {
+    console.log('Database not available, using in-memory storage:', error);
+    // Fallback to in-memory storage
+    inMemorySignups.push(signup);
   }
-  const data = fs.readFileSync(dataFile, 'utf8');
-  return JSON.parse(data);
-}
-
-// Save signups to file
-function saveSignups(signups: Signup[]) {
-  ensureDataDirectory();
-  fs.writeFileSync(dataFile, JSON.stringify(signups, null, 2));
 }
 
 // Simple geocoding function (you can replace with a real geocoding service)
@@ -175,7 +235,7 @@ async function geocodeLocation(location: string): Promise<{ lat: number; lng: nu
 
 export async function GET() {
   try {
-    const signups = getSignups();
+    const signups = await getSignups();
     return NextResponse.json(signups);
   } catch (error) {
     console.error('Error fetching signups:', error);
@@ -186,7 +246,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, location } = body;
+    const { name, email, location, mediaConsent } = body;
 
     if (!name || !email || !location) {
       return NextResponse.json(
@@ -194,8 +254,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
-    const signups = getSignups();
     
     // Get coordinates for the location
     const coordinates = await geocodeLocation(location);
@@ -205,12 +263,12 @@ export async function POST(request: Request) {
       name,
       email,
       location,
+      mediaConsent: mediaConsent || false,
       coordinates: coordinates || undefined,
       timestamp: new Date().toISOString(),
     };
 
-    signups.push(newSignup);
-    saveSignups(signups);
+    await saveSignup(newSignup);
 
     return NextResponse.json(newSignup, { status: 201 });
   } catch (error) {

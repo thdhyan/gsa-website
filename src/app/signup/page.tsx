@@ -8,17 +8,18 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    location: ''
+    location: '',
+    mediaConsent: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -38,7 +39,7 @@ export default function SignupPage() {
 
       if (response.ok) {
         setMessage('Signup successful! Redirecting to map...');
-        setFormData({ name: '', email: '', location: '' });
+        setFormData({ name: '', email: '', location: '', mediaConsent: false });
         
         // Redirect to map page after 2 seconds
         setTimeout(() => {
@@ -118,10 +119,35 @@ export default function SignupPage() {
                 required
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., Mumbai, London, Minneapolis"
+                disabled={isSubmitting}
               />
               <p className="text-xs text-gray-500 mt-1">
                 Enter your city, state, or country of origin
               </p>
+            </div>
+
+            <div className="border-t border-gray-600 pt-4">
+              <div className="flex items-start space-x-3">
+                <input
+                  type="checkbox"
+                  id="mediaConsent"
+                  name="mediaConsent"
+                  checked={formData.mediaConsent}
+                  onChange={handleInputChange}
+                  className="mt-1 h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                  disabled={isSubmitting}
+                />
+                <div>
+                  <label htmlFor="mediaConsent" className="text-sm font-medium text-gray-300">
+                    Media Release Consent
+                  </label>
+                  <p className="text-xs text-gray-400 mt-1">
+                    I consent to being photographed, recorded, or otherwise captured in media during CSGSA events. 
+                    I understand that these images/videos may be used for promotional purposes, social media, 
+                    newsletters, and other CSGSA communications. This consent is voluntary and can be withdrawn at any time.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <button

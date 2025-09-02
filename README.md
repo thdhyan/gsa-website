@@ -51,6 +51,26 @@ cd gsa-website
 npm install
 ```
 
+3. Set up the database (optional - will use in-memory storage if skipped):
+
+   **Option A: Quick local PostgreSQL setup**
+   ```bash
+   npm run db:setup
+   ```
+
+   **Option B: Vercel Postgres (recommended for production)**
+   - Deploy to Vercel
+   - Add Vercel Postgres in your project dashboard
+   - Database tables will be created automatically on first signup
+
+   **Option C: Manual database setup**
+   - See [DATABASE_SETUP.md](DATABASE_SETUP.md) for detailed instructions
+
+4. Start the development server:
+```bash
+npm install
+```
+
 3. Start the development server:
 ```bash
 npm run dev

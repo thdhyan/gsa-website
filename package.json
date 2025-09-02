@@ -6,10 +6,15 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:setup": "bash scripts/setup-local-db.sh",
+    "db:schema": "psql $DATABASE_URL -f database/schema.sql"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
     "@types/leaflet": "^1.9.20",
+    "@vercel/postgres": "^0.10.0",
+    "dotenv": "^17.2.1",
     "leaflet": "^1.9.4",
     "next": "15.5.2",
     "react": "19.1.0",
