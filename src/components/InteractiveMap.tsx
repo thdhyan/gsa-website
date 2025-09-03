@@ -130,6 +130,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     if (typeof window !== 'undefined') {
       import('leaflet').then((L) => {
         // Fix default markers for production
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         delete (L.Icon.Default.prototype as any)._getIconUrl;
         L.Icon.Default.mergeOptions({
           iconRetinaUrl: '/marker-icon-2x.png',

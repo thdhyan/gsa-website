@@ -44,7 +44,7 @@ export default function MapPage() {
       if (response.ok) {
         const data = await response.json();
         // Transform the data to ensure consistent format
-        const transformedData = data.map((signup: any) => ({
+        const transformedData = data.map((signup: Signup) => ({
           ...signup,
           timestamp: signup.created_at || signup.timestamp,
           coordinates:

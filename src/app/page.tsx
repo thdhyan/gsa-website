@@ -108,7 +108,7 @@ export default function Home() {
             <p className="text-gray-300 mb-4">
               The Computer Science Graduate Students Association represents and
               supports graduate students in the Department of Computer Science &
-              Engineering at the University of Minnesota - Twin Cities. We're
+              Engineering at the University of Minnesota - Twin Cities. We&apos;re
               proud to be part of the Gopher community! 🐿️
             </p>
             <div className="flex justify-center">

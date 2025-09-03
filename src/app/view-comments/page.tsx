@@ -1,11 +1,12 @@
 import { neon } from "@neondatabase/serverless";
+import Link from "next/link";
 
 export default async function ViewCommentsPage() {
   // Connect to the Neon database
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   // Query all comments from the database
-  const comments = await sql`SELECT * FROM comments ORDER BY rowid DESC`;
+  const comments = await sql`SELECT * FROM comments ORDER BY id DESC`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900">
@@ -36,9 +37,9 @@ export default async function ViewCommentsPage() {
             >
               Add Comment
             </a>
-            <a href="/" className="text-blue-600 hover:text-blue-800 underline">
+            <Link href="/" className="text-blue-600 hover:text-blue-800 underline">
               ← Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </div>

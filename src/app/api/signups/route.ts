@@ -39,7 +39,7 @@ interface Signup {
 }
 
 // Initialize Neon connection
-let sql: any = null;
+let sql: ReturnType<typeof neon> | null = null;
 
 function initializeNeon() {
   if (!sql && process.env.DATABASE_URL) {
@@ -125,7 +125,7 @@ export async function GET() {
         created_at
       FROM signups 
       ORDER BY created_at DESC
-    `;
+    ` as Signup[];
 
     console.log(`📋 Retrieved ${signups.length} signups from Neon database`);
     return NextResponse.json(signups);
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
         latitude,
         longitude,
         created_at
-    `;
+    ` as Signup[];
 
     const newSignup = result[0];
     console.log(
@@ -188,13 +188,14 @@ export async function POST(request: NextRequest) {
     );
 
     return NextResponse.json(newSignup, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error("❌ Error creating signup:", error);
 
     // Handle unique constraint violation (duplicate email)
     if (
-      error.message?.includes("duplicate key value") ||
-      error.message?.includes("unique constraint")
+      errorMessage?.includes("duplicate key value") ||
+      errorMessage?.includes("unique constraint")
     ) {
       return NextResponse.json(
         { error: "This email is already registered for the event" },

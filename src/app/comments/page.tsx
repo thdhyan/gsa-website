@@ -1,4 +1,5 @@
 import { neon } from "@neondatabase/serverless";
+import Link from "next/link";
 
 export default function CommentsPage() {
   async function create(formData: FormData) {
@@ -33,9 +34,9 @@ export default function CommentsPage() {
             </button>
           </form>
           <div className="mt-8 text-center">
-            <a href="/" className="text-blue-600 hover:text-blue-800 underline">
+            <Link href="/" className="text-blue-600 hover:text-blue-800 underline">
               ← Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </div>
