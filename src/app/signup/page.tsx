@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import LocationAutocomplete from "@/components/LocationAutocomplete";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -12,7 +11,6 @@ export default function SignupPage() {
     location: "",
     mediaConsent: false,
   });
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -25,39 +23,20 @@ export default function SignupPage() {
     }));
   };
 
-  const handlePlaceSelect = (placeId: string, description: string) => {
-    setSelectedPlaceId(placeId);
-    setFormData((prev) => ({
-      ...prev,
-      location: description,
-    }));
-  };
-
-  const handleLocationChange = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      location: value,
-    }));
-    // Clear place ID if user manually types
-    if (value !== formData.location) {
-      setSelectedPlaceId("");
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage("");
 
     try {
-      console.log("🚀 Submitting signup data:", { ...formData, placeId: selectedPlaceId });
+      console.log("🚀 Submitting signup data:", formData);
 
       const response = await fetch("/api/signups", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...formData, placeId: selectedPlaceId }),
+        body: JSON.stringify(formData),
       });
 
       const result = await response.json();
@@ -68,7 +47,6 @@ export default function SignupPage() {
           "🎉 Signup successful! Welcome to GSA! Redirecting to map..."
         );
         setFormData({ name: "", email: "", location: "", mediaConsent: false });
-        setSelectedPlaceId("");
 
         // Redirect to map page after 3 seconds
         setTimeout(() => {
@@ -151,19 +129,19 @@ export default function SignupPage() {
               >
                 Where are you from?
               </label>
-              <LocationAutocomplete
+              <input
+                type="text"
+                id="location"
+                name="location"
                 value={formData.location}
-                onChange={handleLocationChange}
-                onPlaceSelect={handlePlaceSelect}
-                placeholder="e.g., Austin Texas, Bihar India, Mumbai, London, Minneapolis"
+                onChange={handleInputChange}
+                required
                 className="w-full px-3 py-2 bg-gray-800/50 border border-yellow-600/50 rounded-md shadow-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 backdrop-blur-sm"
+                placeholder="e.g., Austin Texas, Bihar India, Mumbai, London, Minneapolis"
                 disabled={isSubmitting}
               />
               <p className="text-xs text-gray-400 mt-1">
-                Start typing to search for suggestions, or enter any location - we&apos;ll find it! 🌍
-              </p>
-              <p className="text-xs text-yellow-300 mt-1">
-                {selectedPlaceId ? "📍 Location selected from suggestions" : "✍️ Custom location will be geocoded automatically"}
+                Enter your city, state, or country - we&apos;ll find the coordinates automatically! 🌍
               </p>
             </div>
 

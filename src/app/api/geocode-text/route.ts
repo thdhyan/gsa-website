@@ -1,5 +1,27 @@
 import { NextResponse } from "next/server";
 
+// Define the OpenCage Data response types
+interface OpenCageGeometry {
+  lat: number;
+  lng: number;
+}
+
+interface OpenCageResult {
+  geometry: OpenCageGeometry;
+  formatted: string;
+  components: {
+    [key: string]: string;
+  };
+}
+
+interface OpenCageResponse {
+  results: OpenCageResult[];
+  status: {
+    code: number;
+    message: string;
+  };
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const address = searchParams.get("address");
@@ -11,7 +33,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  const apiKey = process.env.OPENCAGE_API_KEY;
 
   if (!apiKey) {
     // Return mock coordinates for development/demo based on common patterns
@@ -29,15 +51,15 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Use Google Geocoding API to convert any address to coordinates
+    // Use OpenCage Data Geocoding API to convert any address to coordinates
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
+      `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}&limit=1&no_annotations=1`
     );
 
-    const data = await response.json();
+    const data: OpenCageResponse = await response.json();
 
-    if (data.status !== "OK" || !data.results || data.results.length === 0) {
-      console.error("Google Geocoding API error:", data);
+    if (!response.ok || data.status.code !== 200 || !data.results || data.results.length === 0) {
+      console.error("OpenCage Data API error:", data);
       
       // Fallback to mock coordinates if API fails
       const mockCoordinates = getMockCoordinatesForAddress(address);
@@ -52,9 +74,22 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json(data);
+    // Convert OpenCage Data response format to our expected format
+    const location = data.results[0];
+    return NextResponse.json({
+      results: [{
+        geometry: {
+          location: {
+            lat: location.geometry.lat,
+            lng: location.geometry.lng
+          },
+        },
+        formatted_address: location.formatted || address,
+      }],
+      status: "OK"
+    });
   } catch (error) {
-    console.error("Geocoding API error:", error);
+    console.error("OpenCage Data API error:", error);
     
     // Fallback to mock coordinates on error
     const mockCoordinates = getMockCoordinatesForAddress(address);

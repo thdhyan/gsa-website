@@ -11,10 +11,40 @@ export async function GET(request: Request) {
     );
   }
 
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  // Handle Nominatim place IDs that contain coordinates
+  if (placeId.startsWith("nominatim_")) {
+    const coordsPart = placeId.replace("nominatim_", "");
+    const [lat, lng] = coordsPart.split("_").map(Number);
+    
+    if (!isNaN(lat) && !isNaN(lng)) {
+      return NextResponse.json({
+        result: {
+          geometry: {
+            location: { lat, lng },
+          },
+        },
+      });
+    }
+  }
 
-  if (!apiKey || placeId.startsWith("mock_")) {
-    // Return mock coordinates for development/demo
+  // Handle PositionStack place IDs (legacy support)
+  if (placeId.startsWith("positionstack_")) {
+    const coordsPart = placeId.replace("positionstack_", "");
+    const [lat, lng] = coordsPart.split("_").map(Number);
+    
+    if (!isNaN(lat) && !isNaN(lng)) {
+      return NextResponse.json({
+        result: {
+          geometry: {
+            location: { lat, lng },
+          },
+        },
+      });
+    }
+  }
+
+  // Handle mock place IDs
+  if (placeId.startsWith("mock_")) {
     const mockCoordinates = {
       mock_1: { lat: 44.9778, lng: -93.265 }, // Minneapolis
       mock_2: { lat: 20.5937, lng: 78.9629 }, // India center
@@ -22,8 +52,8 @@ export async function GET(request: Request) {
     };
 
     const coords = mockCoordinates[placeId as keyof typeof mockCoordinates] || {
-      lat: 0,
-      lng: 0,
+      lat: 44.9778,
+      lng: -93.265,
     };
 
     return NextResponse.json({
@@ -35,27 +65,13 @@ export async function GET(request: Request) {
     });
   }
 
-  try {
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry&key=${apiKey}`
-    );
-
-    const data = await response.json();
-
-    if (data.status !== "OK") {
-      console.error("Google Places Details API error:", data);
-      return NextResponse.json(
-        { error: "Failed to fetch place details" },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error fetching place details:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch place details" },
-      { status: 500 }
-    );
-  }
+  // For any other place IDs, try to extract coordinates or return default
+  console.error("Unknown place_id format:", placeId);
+  return NextResponse.json({
+    result: {
+      geometry: {
+        location: { lat: 44.9778, lng: -93.265 }, // Default to Minneapolis
+      },
+    },
+  });
 }
