@@ -1,23 +1,13 @@
-#!/usr/bin/env node
-
-// Database setup script for Neon PostgreSQL
 const { neon } = require("@neondatabase/serverless");
-require("dotenv").config({ path: ".env.local" });
 
 async function setupDatabase() {
-  console.log("🚀 Setting up Neon PostgreSQL database...");
-
-  if (!process.env.DATABASE_URL) {
-    console.error("❌ DATABASE_URL not found in environment variables");
-    process.exit(1);
-  }
-
   try {
+    // Load environment variables
+    require("dotenv").config({ path: ".env.development.local" });
+
     const sql = neon(process.env.DATABASE_URL);
 
-    console.log("📋 Creating signups table...");
-
-    // Create the signups table
+    console.log("Creating signups table...");
     await sql`
       CREATE TABLE IF NOT EXISTS signups (
         id VARCHAR(50) PRIMARY KEY,
@@ -32,15 +22,14 @@ async function setupDatabase() {
       )
     `;
 
-    console.log("📊 Creating indexes...");
+    console.log("Creating comments table (from tutorial)...");
+    await sql`CREATE TABLE IF NOT EXISTS comments (comment TEXT)`;
 
-    // Create indexes
+    console.log("Creating indexes...");
     await sql`CREATE INDEX IF NOT EXISTS idx_signups_timestamp ON signups(timestamp)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_signups_location ON signups(location)`;
 
-    console.log("📝 Inserting sample data...");
-
-    // Insert sample data
+    console.log("Inserting sample data...");
     await sql`
       INSERT INTO signups (id, name, email, location, media_consent, lat, lng, timestamp) VALUES 
       ('1725321600000', 'John Doe', 'john@example.com', 'New York', TRUE, 40.7128, -74.0060, '2024-09-02T16:00:00.000Z'),
@@ -49,18 +38,16 @@ async function setupDatabase() {
       ON CONFLICT (id) DO NOTHING
     `;
 
-    console.log("🔍 Verifying setup...");
+    console.log("Database setup completed successfully!");
 
-    // Verify the setup
-    const result = await sql`SELECT COUNT(*) as count FROM signups`;
-    const count = result[0].count;
+    // Test the connection by querying both tables
+    const signupsCount = await sql`SELECT COUNT(*) FROM signups`;
+    const commentsCount = await sql`SELECT COUNT(*) FROM comments`;
 
-    console.log(
-      `✅ Database setup complete! Found ${count} records in signups table.`
-    );
-    console.log("🎉 Your Neon database is ready to use!");
+    console.log(`Signups table has ${signupsCount[0].count} records`);
+    console.log(`Comments table has ${commentsCount[0].count} records`);
   } catch (error) {
-    console.error("❌ Error setting up database:", error);
+    console.error("Database setup failed:", error);
     process.exit(1);
   }
 }

@@ -1,147 +1,150 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+import React from "react";
+import dynamic from "next/dynamic";
 
+// Define the Signup interface
 interface Signup {
-  id: string;
+  id: string | number;
   name: string;
   email: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
   coordinates?: {
     lat: number;
     lng: number;
   };
-  timestamp: string;
+  timestamp?: string;
+  created_at?: string;
+  mediaConsent?: boolean;
 }
 
-// Create a separate map component to handle Leaflet
-function MapComponent({ signups }: { signups: Signup[] }) {
-  const [isClient, setIsClient] = useState(false);
+export interface InteractiveMapProps {
+  signups: Signup[];
+  className?: string;
+}
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (isClient && typeof window !== 'undefined') {
-      // Import Leaflet dynamically when component mounts
-      import('leaflet').then((L) => {
-        // Fix default markers - properly typed interface
-        interface LeafletIconPrototype {
-          _getIconUrl?: () => string;
+// Dynamic import for the map component to handle SSR
+const MapComponent = dynamic(
+  () => import("react-leaflet").then((mod) => {
+    const { MapContainer, TileLayer, Marker, Popup } = mod;
+    
+    return function MapComponentInner({ signups }: { signups: Signup[] }) {
+      console.log('MapComponentInner received signups:', signups);
+      
+      // Transform coordinates to ensure consistent format
+      const processedSignups = signups.map(signup => {
+        let lat, lng;
+        
+        if (signup.coordinates) {
+          lat = signup.coordinates.lat;
+          lng = signup.coordinates.lng;
+        } else if (signup.latitude !== undefined && signup.longitude !== undefined) {
+          lat = signup.latitude;
+          lng = signup.longitude;
+        } else {
+          console.log('No coordinates found for signup:', signup);
+          return null;
         }
-        delete (L.Icon.Default.prototype as LeafletIconPrototype)._getIconUrl;
+        
+        return {
+          ...signup,
+          lat,
+          lng
+        };
+      }).filter(Boolean) as (Signup & { lat: number; lng: number })[];
+
+      console.log('Processed signups for map:', processedSignups);
+
+      if (processedSignups.length === 0) {
+        return (
+          <MapContainer
+            center={[39.8283, -98.5795]} // Center of US
+            zoom={4}
+            style={{ height: "600px", width: "100%" }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+          </MapContainer>
+        );
+      }
+
+      // Calculate bounds for all markers
+      const bounds = processedSignups.map(signup => [signup.lat, signup.lng] as [number, number]);
+      
+      return (
+        <MapContainer
+          bounds={bounds}
+          style={{ height: "600px", width: "100%" }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {processedSignups.map((signup) => (
+            <Marker key={signup.id} position={[signup.lat, signup.lng]}>
+              <Popup>
+                <div>
+                  <h3 className="font-semibold">{signup.name}</h3>
+                  <p className="text-sm">{signup.location}</p>
+                  {(signup.timestamp || signup.created_at) && (
+                    <p className="text-xs text-gray-600">
+                      {new Date(signup.timestamp || signup.created_at!).toLocaleDateString()}
+                    </p>
+                  )}
+                  {signup.mediaConsent !== undefined && (
+                    <p className="text-xs text-blue-600">
+                      Media consent: {signup.mediaConsent ? 'Yes' : 'No'}
+                    </p>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      );
+    };
+  }),
+  {
+    ssr: false,
+    loading: () => (
+      <div 
+        style={{ height: "600px", width: "100%" }} 
+        className="bg-gray-100 flex items-center justify-center"
+      >
+        <p>Loading map...</p>
+      </div>
+    ),
+  }
+);
+
+const InteractiveMap: React.FC<InteractiveMapProps> = ({
+  signups,
+  className = "",
+}) => {
+  // Configure Leaflet default icons to use local files
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      import('leaflet').then((L) => {
+        // Fix default markers for production
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
         L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+          iconRetinaUrl: '/marker-icon-2x.png',
+          iconUrl: '/marker-icon.png',
+          shadowUrl: '/marker-shadow.png',
         });
       });
     }
-  }, [isClient]);
-
-  if (!isClient) {
-    return (
-      <div className="h-96 flex items-center justify-center bg-gray-100 rounded-lg">
-        <div className="text-gray-500">Loading map...</div>
-      </div>
-    );
-  }
-
-  const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
-  const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
-  const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
-  const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
-
-  const validSignups = signups.filter(signup => 
-    signup.coordinates && 
-    (signup.coordinates.lat !== 0 || signup.coordinates.lng !== 0)
-  );
-
-  return (
-    <div className="h-96 w-full rounded-lg overflow-hidden shadow-lg">
-      <MapContainer
-        center={[20, 0]}
-        zoom={2}
-        style={{ height: '100%', width: '100%' }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {validSignups.map((signup) => (
-          <Marker 
-            key={signup.id} 
-            position={[signup.coordinates!.lat, signup.coordinates!.lng]}
-          >
-            <Popup>
-              <div className="p-2">
-                <h3 className="font-bold text-sm">{signup.name}</h3>
-                <p className="text-xs text-gray-600">{signup.location}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  Joined: {new Date(signup.timestamp).toLocaleDateString()}
-                </p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-    </div>
-  );
-}
-
-export default function InteractiveMap() {
-  const [signups, setSignups] = useState<Signup[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetchSignups();
-    
-    // Set up auto-refresh every 15 seconds for the map component
-    const interval = setInterval(fetchSignups, 15000);
-    
-    return () => clearInterval(interval);
   }, []);
 
-  const fetchSignups = async () => {
-    try {
-      const response = await fetch('/api/signups', {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSignups(data);
-      } else {
-        setError('Failed to load signups');
-      }
-    } catch (err) {
-      setError('An error occurred while loading signups');
-      console.error('Error fetching signups:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  return (
+    <div className={`w-full h-[600px] rounded-lg overflow-hidden ${className}`}>
+      <MapComponent signups={signups} />
+    </div>
+  );
+};
 
-  if (isLoading) {
-    return (
-      <div className="h-96 flex items-center justify-center bg-gray-100 rounded-lg">
-        <div className="text-gray-500">Loading map...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="h-96 flex items-center justify-center bg-gray-100 rounded-lg">
-        <div className="text-red-500">{error}</div>
-      </div>
-    );
-  }
-
-  return <MapComponent signups={signups} />;
-}
+export default InteractiveMap;

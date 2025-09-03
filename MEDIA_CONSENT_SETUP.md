@@ -2,7 +2,7 @@
 
 ## Quick Setup in Neon Console
 
-Since you already have the Neon database configured, you need to add the `media_consent` column to your existing table. 
+Since you already have the Neon database configured, you need to add the `media_consent` column to your existing table.
 
 ### Option 1: Add Column to Existing Table
 
@@ -36,7 +36,7 @@ CREATE INDEX IF NOT EXISTS idx_signups_timestamp ON signups(timestamp);
 CREATE INDEX IF NOT EXISTS idx_signups_location ON signups(location);
 
 -- Insert sample data (optional)
-INSERT INTO signups (id, name, email, location, media_consent, lat, lng, timestamp) VALUES 
+INSERT INTO signups (id, name, email, location, media_consent, lat, lng, timestamp) VALUES
 ('1725321600000', 'John Doe', 'john@example.com', 'New York', TRUE, 40.7128, -74.0060, '2024-09-02T16:00:00.000Z'),
 ('1725325200000', 'Jane Smith', 'jane@example.com', 'London', FALSE, 51.5074, -0.1278, '2024-09-02T17:00:00.000Z'),
 ('1725328800000', 'Akira Tanaka', 'akira@example.com', 'Tokyo', TRUE, 35.6762, 139.6503, '2024-09-02T18:00:00.000Z')

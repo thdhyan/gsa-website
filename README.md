@@ -35,18 +35,20 @@ The Computer Science Graduate Students Association represents and supports gradu
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <your-repo-url>
 cd gsa-website
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -54,24 +56,29 @@ npm install
 3. Set up the database (optional - will use in-memory storage if skipped):
 
    **Option A: Quick local PostgreSQL setup**
+
    ```bash
    npm run db:setup
    ```
 
    **Option B: Vercel Postgres (recommended for production)**
+
    - Deploy to Vercel
    - Add Vercel Postgres in your project dashboard
    - Database tables will be created automatically on first signup
 
    **Option C: Manual database setup**
+
    - See [DATABASE_SETUP.md](DATABASE_SETUP.md) for detailed instructions
 
 4. Start the development server:
+
 ```bash
 npm install
 ```
 
 3. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -103,7 +110,7 @@ npm run start
 ```json
 {
   "name": "John Doe",
-  "email": "john@example.com", 
+  "email": "john@example.com",
   "location": "New York"
 }
 ```
@@ -120,7 +127,7 @@ Signups are stored in `/data/signups.json` with the following structure:
   "location": "New York",
   "coordinates": {
     "lat": 40.7128,
-    "lng": -74.0060
+    "lng": -74.006
   },
   "timestamp": "2023-12-31T23:59:59.999Z"
 }
@@ -136,17 +143,19 @@ Replace the mock geocoding in `/src/app/api/signups/route.ts` with a real servic
 // Example using Google Maps Geocoding API
 async function geocodeLocation(location: string) {
   const response = await fetch(
-    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${process.env.GOOGLE_MAPS_API_KEY}`
+    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      location
+    )}&key=${process.env.GOOGLE_MAPS_API_KEY}`
   );
   const data = await response.json();
-  
+
   if (data.results?.[0]?.geometry?.location) {
     return {
       lat: data.results[0].geometry.location.lat,
-      lng: data.results[0].geometry.location.lng
+      lng: data.results[0].geometry.location.lng,
     };
   }
-  
+
   return null;
 }
 ```

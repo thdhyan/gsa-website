@@ -7,17 +7,20 @@ This guide explains how to set up a database for the GSA Website. The applicatio
 ### Setup Steps:
 
 1. **Install the dependency** (already done):
+
    ```bash
    npm install @vercel/postgres
    ```
 
 2. **Add Vercel Postgres to your project**:
+
    - Go to [Vercel Dashboard](https://vercel.com/dashboard)
    - Select your project → Storage → Create Database
    - Choose "Postgres" → Create
    - Vercel will automatically add environment variables to your project
 
 3. **Run the database schema**:
+
    - Go to your Vercel project dashboard
    - Navigate to Storage → Your Database → Query
    - Copy and paste the SQL from `database/schema.sql`
@@ -31,6 +34,7 @@ This guide explains how to set up a database for the GSA Website. The applicatio
    ```
 
 ### Pricing:
+
 - **Free tier**: 60 hours of compute time per month
 - **Pro tier**: $0.50/month for storage + compute usage
 
@@ -41,22 +45,26 @@ This guide explains how to set up a database for the GSA Website. The applicatio
 ### Setup Steps:
 
 1. **Install Supabase client**:
+
    ```bash
    npm install @supabase/supabase-js
    ```
 
 2. **Create a Supabase project**:
+
    - Go to [Supabase](https://supabase.com)
    - Create new project
    - Go to Settings → API to get your URL and key
 
 3. **Update environment variables**:
+
    ```env
    SUPABASE_URL=your_project_url
    SUPABASE_ANON_KEY=your_anon_key
    ```
 
 4. **Create the table**:
+
    - Go to Supabase Dashboard → SQL Editor
    - Run the SQL from `database/schema.sql`
 
@@ -64,6 +72,7 @@ This guide explains how to set up a database for the GSA Website. The applicatio
    Replace the database calls in `src/app/api/signups/route.ts` with Supabase client calls.
 
 ### Pricing:
+
 - **Free tier**: 500MB database, 50MB file storage
 - **Pro tier**: $25/month
 
@@ -74,16 +83,19 @@ This guide explains how to set up a database for the GSA Website. The applicatio
 ### Setup Steps:
 
 1. **Install PlanetScale client**:
+
    ```bash
    npm install @planetscale/database
    ```
 
 2. **Create PlanetScale database**:
+
    - Go to [PlanetScale](https://planetscale.com)
    - Create new database
    - Get connection string from Settings
 
 3. **Update environment variables**:
+
    ```env
    DATABASE_URL=mysql://username:password@host/database?ssl={"rejectUnauthorized":true}
    ```
@@ -102,6 +114,7 @@ This guide explains how to set up a database for the GSA Website. The applicatio
    ```
 
 ### Pricing:
+
 - **Free tier**: 1 database, 1GB storage, 1 billion row reads/month
 - **Scaler tier**: $39/month
 
@@ -112,13 +125,16 @@ This guide explains how to set up a database for the GSA Website. The applicatio
 ### Setup Steps:
 
 1. **Create Railway project**:
+
    - Go to [Railway](https://railway.app)
    - Create new project → Add PostgreSQL
 
 2. **Get connection details**:
+
    - Copy the DATABASE_URL from Railway dashboard
 
 3. **Update environment variables**:
+
    ```env
    DATABASE_URL=postgresql://username:password@host:port/database
    ```
@@ -127,6 +143,7 @@ This guide explains how to set up a database for the GSA Website. The applicatio
    - Use Railway's built-in database interface or connect via psql
 
 ### Pricing:
+
 - **Free tier**: $5 credit/month (enough for small projects)
 - **Pro tier**: Usage-based pricing
 
@@ -196,6 +213,6 @@ For most users, **Vercel Postgres** is the best choice because:
 ✅ **Automatic environment variable setup**  
 ✅ **Built-in connection pooling**  
 ✅ **No additional configuration needed**  
-✅ **Good free tier for small projects**  
+✅ **Good free tier for small projects**
 
 The current implementation will work immediately once you add Vercel Postgres to your project!
