@@ -160,7 +160,10 @@ export default function SignupPage() {
                 disabled={isSubmitting}
               />
               <p className="text-xs text-gray-400 mt-1">
-                Start typing to search for your city, state, or country of origin
+                Start typing to search for suggestions, or enter any location - we&apos;ll find it! 🌍
+              </p>
+              <p className="text-xs text-yellow-300 mt-1">
+                {selectedPlaceId ? "📍 Location selected from suggestions" : "✍️ Custom location will be geocoded automatically"}
               </p>
             </div>
 

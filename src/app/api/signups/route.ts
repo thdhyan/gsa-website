@@ -106,6 +106,32 @@ async function getCoordinatesFromPlaceId(placeId: string): Promise<{ lat: number
   }
 }
 
+// Get coordinates from any text address using Google Geocoding API
+async function getCoordinatesFromAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/geocode-text?address=${encodeURIComponent(address)}`);
+    
+    if (!response.ok) {
+      console.error('Geocode text API request failed:', response.status);
+      return null;
+    }
+    
+    const data = await response.json();
+    
+    if (data.results?.[0]?.geometry?.location) {
+      return {
+        lat: data.results[0].geometry.location.lat,
+        lng: data.results[0].geometry.location.lng
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching coordinates from address:', error);
+    return null;
+  }
+}
+
 // GET endpoint - Fetch all signups from Neon
 export async function GET() {
   try {
@@ -181,12 +207,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get coordinates - try place ID first, then fall back to hardcoded mapping
+    // Get coordinates - try place ID first, then text geocoding, then fall back to hardcoded mapping
     let coordinates: { lat: number; lng: number } | null = null;
     
     if (placeId) {
       console.log(`🌍 Fetching coordinates for place ID: ${placeId}`);
       coordinates = await getCoordinatesFromPlaceId(placeId);
+    }
+    
+    if (!coordinates) {
+      console.log(`🗺️ Trying text geocoding for location: ${location}`);
+      coordinates = await getCoordinatesFromAddress(location);
     }
     
     if (!coordinates) {
