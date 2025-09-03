@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   if (placeId.startsWith("nominatim_")) {
     const coordsPart = placeId.replace("nominatim_", "");
     const [lat, lng] = coordsPart.split("_").map(Number);
-    
+
     if (!isNaN(lat) && !isNaN(lng)) {
       return NextResponse.json({
         result: {
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
   if (placeId.startsWith("positionstack_")) {
     const coordsPart = placeId.replace("positionstack_", "");
     const [lat, lng] = coordsPart.split("_").map(Number);
-    
+
     if (!isNaN(lat) && !isNaN(lng)) {
       return NextResponse.json({
         result: {

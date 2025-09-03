@@ -46,4 +46,5 @@ The system includes multiple fallback layers:
 ## Previous Integrations
 
 This replaces the previous Nominatim and PositionStack integrations for better reliability and data quality.
+
 - `GET /api/geocode-text` - Get coordinates from any address text

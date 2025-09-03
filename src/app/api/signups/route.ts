@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { NextRequest, NextResponse } from "next/server";
+import { geocodeAddress } from "@/lib/geocoding";
 
 // Simple coordinate database for Minnesota and common locations
 const locationCoordinates: { [key: string]: { lat: number; lng: number } } = {
@@ -20,7 +21,6 @@ const locationCoordinates: { [key: string]: { lat: number; lng: number } } = {
   "Tokyo, Japan": { lat: 35.6762, lng: 139.6503 },
   "Mumbai, India": { lat: 19.076, lng: 72.8777 },
   "Ahmedabad, India": { lat: 23.0225, lng: 72.5714 },
-  Ahmedabad: { lat: 23.0225, lng: 72.5714 },
   "Toronto, Canada": { lat: 43.6532, lng: -79.3832 },
   "Berlin, Germany": { lat: 52.52, lng: 13.405 },
   "Beijing, China": { lat: 39.9042, lng: 116.4074 },
@@ -80,27 +80,13 @@ function getCoordinatesForLocation(
 }
 
 // Get coordinates from any text address using OpenCage Data Geocoding API
-async function getCoordinatesFromAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+async function getCoordinatesFromAddress(
+  address: string
+): Promise<{ lat: number; lng: number } | null> {
   try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/geocode-text?address=${encodeURIComponent(address)}`);
-    
-    if (!response.ok) {
-      console.error('Geocode text API request failed:', response.status);
-      return null;
-    }
-    
-    const data = await response.json();
-    
-    if (data.results?.[0]?.geometry?.location) {
-      return {
-        lat: data.results[0].geometry.location.lat,
-        lng: data.results[0].geometry.location.lng
-      };
-    }
-    
-    return null;
+    return await geocodeAddress(address);
   } catch (error) {
-    console.error('Error fetching coordinates from address:', error);
+    console.error("Error fetching coordinates from address:", error);
     return null;
   }
 }
@@ -139,7 +125,7 @@ export async function GET() {
       return NextResponse.json(sampleData);
     }
 
-    const signups = await sql`
+    const signups = (await sql`
       SELECT 
         id,
         name,
@@ -151,7 +137,7 @@ export async function GET() {
         created_at
       FROM signups 
       ORDER BY created_at DESC
-    ` as Signup[];
+    `) as Signup[];
 
     console.log(`📋 Retrieved ${signups.length} signups from Neon database`);
     return NextResponse.json(signups);
@@ -182,10 +168,10 @@ export async function POST(request: NextRequest) {
 
     // Get coordinates using text geocoding (OpenCage Data API)
     let coordinates: { lat: number; lng: number } | null = null;
-    
+
     console.log(`🌍 Fetching coordinates for location: ${location}`);
     coordinates = await getCoordinatesFromAddress(location);
-    
+
     if (!coordinates) {
       console.log(`📍 Using fallback coordinates for location: ${location}`);
       coordinates = getCoordinatesForLocation(location);
@@ -200,7 +186,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert into Neon database
-    const result = await sql`
+    const result = (await sql`
       INSERT INTO signups (name, email, location, media_consent, latitude, longitude)
       VALUES (${name}, ${email}, ${location}, ${mediaConsent || false}, ${
       coordinates?.lat || null
@@ -214,7 +200,7 @@ export async function POST(request: NextRequest) {
         latitude,
         longitude,
         created_at
-    ` as Signup[];
+    `) as Signup[];
 
     const newSignup = result[0];
     console.log(
@@ -223,7 +209,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newSignup, { status: 201 });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     console.error("❌ Error creating signup:", error);
 
     // Handle unique constraint violation (duplicate email)

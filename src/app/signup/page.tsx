@@ -141,7 +141,8 @@ export default function SignupPage() {
                 disabled={isSubmitting}
               />
               <p className="text-xs text-gray-400 mt-1">
-                Enter your city, state, or country - we&apos;ll find the coordinates automatically! 🌍
+                Enter your city, state, or country - we&apos;ll find the
+                coordinates automatically! 🌍
               </p>
             </div>
 
