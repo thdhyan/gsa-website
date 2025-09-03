@@ -36,6 +36,7 @@ interface Signup {
   latitude?: number;
   longitude?: number;
   created_at?: string;
+  placeId?: string;
 }
 
 // Initialize Neon connection
@@ -77,6 +78,32 @@ function getCoordinatesForLocation(
     `⚠️ No coordinates found for "${location}", defaulting to Minneapolis`
   );
   return locationCoordinates["Minneapolis, MN"];
+}
+
+// Get coordinates from Google Places API using place ID
+async function getCoordinatesFromPlaceId(placeId: string): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/geocode?place_id=${placeId}`);
+    
+    if (!response.ok) {
+      console.error('Geocode API request failed:', response.status);
+      return null;
+    }
+    
+    const data = await response.json();
+    
+    if (data.result?.geometry?.location) {
+      return {
+        lat: data.result.geometry.location.lat,
+        lng: data.result.geometry.location.lng
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching coordinates from place ID:', error);
+    return null;
+  }
 }
 
 // GET endpoint - Fetch all signups from Neon
@@ -144,7 +171,7 @@ export async function POST(request: NextRequest) {
     initializeNeon();
 
     const body = await request.json();
-    const { name, email, location, mediaConsent } = body;
+    const { name, email, location, mediaConsent, placeId } = body;
 
     // Validate required fields
     if (!name || !email || !location) {
@@ -154,8 +181,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get coordinates for the location
-    const coordinates = getCoordinatesForLocation(location);
+    // Get coordinates - try place ID first, then fall back to hardcoded mapping
+    let coordinates: { lat: number; lng: number } | null = null;
+    
+    if (placeId) {
+      console.log(`🌍 Fetching coordinates for place ID: ${placeId}`);
+      coordinates = await getCoordinatesFromPlaceId(placeId);
+    }
+    
+    if (!coordinates) {
+      console.log(`📍 Using fallback coordinates for location: ${location}`);
+      coordinates = getCoordinatesForLocation(location);
+    }
 
     if (!sql) {
       console.log("⚠️ Database not available, signup not saved");
